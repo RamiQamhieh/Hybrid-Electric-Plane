@@ -1,4 +1,4 @@
-# Hybrid-Electric-Plane
+# NASA Hybrid-Electric-Plane
 Based on NASA design challenge requirments, this is the code simulating the flight of a hybrid-electrical passenger plane. The purpose is to outline overall feasibility and give a technical basis for design choices.
 There should be 3 functions that take as an input the aircraft state (ex, fuel left/used, battery state, altitude, etc) and output the final state. A main function will define the paramaters and call these three functions in order:
 
