@@ -1,0 +1,50 @@
+%% APU calculations
+% The APU needs an air inlet of some sort to combust its fuel.
+% to determine the size of this inlet, we will assume that we want to burn
+% the entirety of our jetfuel during each flight, so the fuel combustion
+% rate will be Mass_JA / Flight_time. To determine the air intake size, we
+% must approximate JA as a hydrocarbon chain. The density of JA is ~185,
+% and is composed of paraffin series carbon chains of varying lengths.
+% Dodecane (C12H26) is one such paraffin hycrocarbon  and has a 
+% molecular mass of 170, which is close to JA and the difference can be
+% explained by the addition of impurities in the compound. 
+%
+% Combustion reaction of hydrocarbons goes as follows : 
+%
+%       a*O_2 + b*C_12_H_26  ->  c*C_O_2 + d*H_2_O
+%
+% a,b,c,d are the coefficients to balance the equation so that the same
+% amount of C, O, and H are on both sides of the arrow. 
+%
+% balancing the reaction results in the following : 
+%
+%       37*O_2 + 2*C_12_H_26  ->  24*C_O_2 + 26*H_2_O
+
+rhoV_JA = 0.8; % mass per volume : kg/L
+rho_JA = 800; % density in kg/m^3
+
+MM_JA = 185; % molar mass in kg/kmol for JA
+MM_O2 = 32; % mm for oxygen
+
+m_JA = 2000; % kg of jet fuel to be carried
+
+% for 500 mi range at 600 kph, flight time is ~1.5 hr, rounded up to
+% compensate for take off and landing.
+
+FT = 1.5;  % keep flight time in hours since speed is kph anyway
+FCR = m_JA/FT; % fuel consumption rate : kg/hr
+
+M_FCR = FCR/MM_JA; % molar fuel combustion rate, in kmol/hr
+
+[~,~,r40] = hw2_1(12192,'SI'); % air density at 40,000 ft
+
+M_O2 = M_FCR*37/2; % equivalent kmol/hr of O2 burned per kmol of JA
+
+mdot = M_O2*MM_O2;  % kg/hr of O2 needed for combustion
+
+% to use standard air density, we actually need 5*mdot worth of massflow
+% since O2 is only about ~20% of air mass.
+
+Vcruise = 600; % kph
+
+intake = 5*mdot/r40/(1000*Vcruise); % area of air intake = mass/hr/(mass/vol)/(m/hr)
