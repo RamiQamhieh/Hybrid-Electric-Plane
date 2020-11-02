@@ -1,0 +1,47 @@
+  
+%% Function to find cruise power and thrust needed
+function Cruise(v,m,s,alt)
+
+w = 9.81*m;
+v = v/3.6;
+
+[~,~,rho] = hw2_1(alt/3.2808,"SI"); % input alt in ft, converted to m here
+
+q = 1/2*rho*v^2;
+
+e = 0.9213; % span efficiency factor
+k = 1/pi/12/e;
+
+cd0 = 0.021;
+[~,~,~,CDi] = wingChar(v*3.6,rho,m,-1,12);
+CD = cd0 + CDi;
+
+D = q*s*CD;
+
+d = 1.64;
+A = (d/2)^2*pi;
+ve = @(V,d) rho*A*V*(V-v) - D; 
+% quadratic equation relating cruise speed, exhaust speed and thrust_req
+Ve = fsolve(ve,v);
+eta = 2/(1 + Ve/v);
+
+
+%Preq = @(cd0,r,v,w,S) 0.5*cd0*r*S*v^3 + 2*k*w^2/r/S/v; % P_req for cruise
+
+Pcruise = D * v / eta;
+
+e_vol = 1.386*1000; % energy density per metre^3, kWh/m^3, 
+                    % converted from density per litre
+                    
+wingVol = 8.208; % m^3
+
+fuelVol = wingVol*0.85; % usable wing volume to store fuel.
+
+Emax_kWh = fuelVol*e_vol; % in kWh
+
+t_hr = Emax_kWh*1000/Pcruise; % in hours
+
+m_kg = 38810; Vcruise_kph = v*3.6; alt_m = 12192; Pcruise_MW = Pcruise/10^6;
+D_kN = D/1000; 
+
+tt = table(m_kg,Vcruise_kph,alt_m,Pcruise_MW,D_kN,Emax_kWh,t_hr, eta)
